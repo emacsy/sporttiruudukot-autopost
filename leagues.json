@@ -1,0 +1,8 @@
+[
+  {"id": "liiga", "name": "Liigaruudukko", "url": "https://sporttiruudukot.fi/liiga/"},
+  {"id": "nhl", "name": "NHL-ruudukko", "url": "https://sporttiruudukot.fi/nhl/"},
+  {"id": "nba", "name": "NBA-ruudukko", "url": "https://sporttiruudukot.fi/nba/"},
+  {"id": "premier", "name": "Premierruudukko", "url": "https://sporttiruudukot.fi/premier/", "tag": "valioliiga"},
+  {"id": "veikkaus", "name": "Veikkausruudukko", "url": "https://sporttiruudukot.fi/veikkaus/", "tag": "veikkausliiga"},
+  {"id": "mlb", "name": "MLB-ruudukko", "url": "https://sporttiruudukot.fi/mlb/"}
+]

@@ -1,0 +1,12 @@
+{
+  "name": "sporttiruudukot-autopost",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tekee sporttiruudukot.fi:n päivän ruudukoista Instagram-kuvat",
+  "scripts": {
+    "generate": "node generate.js"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
