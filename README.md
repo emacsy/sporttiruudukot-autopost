@@ -15,12 +15,17 @@ Kuvat tulevat kansioon `output/VVVV-KK-PP/`:
 - `kuvateksti.txt`: karusellin kuvateksti
 - `data.json`: haetut ruudukot
 
-## Ajastus
-`.github/workflows/daily.yml` ajaa skriptin joka aamu GitHub Actionsissa. Kuvat voi ladata
-Actions-välilehdeltä ajon kohdasta "Artifacts". Ajon voi käynnistää myös käsin (Run workflow).
+## Ajastus ja julkaisu
+`.github/workflows/daily.yml` ajaa joka aamu GitHub Actionsissa:
+1. `generate.js` tekee kuvat.
+2. Kuvat tallennetaan `kuvat`-haaraan, josta ne saavat julkisen osoitteen (vaatii julkisen repositorion).
+3. `publish.js` julkaisee karusellin ja tarinat Instagramiin.
+
+Tarvittavat salaisuudet (Settings → Secrets and variables → Actions): `IG_ACCESS_TOKEN`, `IG_USER_ID`.
+
+Ajon voi käynnistää käsin: Actions → Päivän ruudukot → Run workflow. Silloin voi valita, julkaistaanko
+Instagramiin ja julkaistaanko tarinat. Kuvat voi ladata ajon kohdasta "Artifacts".
 
 ## Uuden liigan lisääminen
 Lisää rivi tiedostoon `leagues.json`.
 
-## Vielä tekemättä
-- Julkaisu Instagramiin (Instagram API, vaatii käyttöoikeustunnuksen)
