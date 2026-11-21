@@ -39,6 +39,8 @@ jobs:
         run: node generate.js
 
       - name: Tee TikTok-video
+        id: video
+        continue-on-error: true   # videon virhe ei estä Instagram-julkaisua
         run: node make_video.js "output/$(TZ=Europe/Helsinki date +%F)"
 
       - name: Tallenna kuvat ladattaviksi
@@ -70,7 +72,7 @@ jobs:
         run: node publish.js "${{ steps.images.outputs.dir }}"
 
       - name: Lähetä TikTokiin
-        if: ${{ !cancelled() && steps.images.outcome == 'success' && vars.TIKTOK_ENABLED == 'true' && (github.event_name == 'schedule' || inputs.tiktok) }}
+        if: ${{ !cancelled() && steps.images.outcome == 'success' && steps.video.outcome == 'success' && vars.TIKTOK_ENABLED == 'true' && (github.event_name == 'schedule' || inputs.tiktok) }}
         continue-on-error: true   # TikTok-virhe ei kaada Instagram-julkaisua
         env:
           TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}

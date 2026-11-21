@@ -36,5 +36,8 @@ const file = path.join(dir, 'tiktok.mp4');
 args.push('-filter_complex', parts.join(';'), '-map', '[vout]', '-map', `${slides.length}:a`,
   '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
   '-c:a', 'aac', '-b:a', '128k', '-shortest', file);
-execFileSync('ffmpeg', args, { stdio: 'inherit' });
+// ffmpeg tulee npm-paketista (ffmpeg-static), joten sitä ei tarvitse asentaa erikseen
+let FFMPEG = 'ffmpeg';
+try { FFMPEG = require('ffmpeg-static') || FFMPEG; } catch { /* käytetään järjestelmän ffmpegiä */ }
+execFileSync(FFMPEG, args, { stdio: 'inherit' });
 console.log(`Video valmis: ${file} (${(fs.statSync(file).size / 1e6).toFixed(1)} Mt, ${total.toFixed(1)} s, ${slides.length} kuvaa)`);
