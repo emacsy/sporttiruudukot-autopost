@@ -8,7 +8,7 @@
 // 3) node tiktok_auth.js <client_key> <client_secret> "<kopioitu osoite>"
 //    -> tulostaa refresh tokenin.
 const REDIRECT = process.env.TIKTOK_REDIRECT_URI || 'https://sporttiruudukot.fi/';
-const SCOPES = 'user.info.basic,video.upload,video.publish';
+const SCOPES = process.env.TIKTOK_SCOPES || 'user.info.basic,video.upload';  // lisää video.publish, kun Direct Post on hyväksytty
 const [key, secret, url] = process.argv.slice(2);
 
 if (!key) { console.log('Käyttö: node tiktok_auth.js <client_key> [<client_secret> "<paluuosoite>"]'); process.exit(1); }

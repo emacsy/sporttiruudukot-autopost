@@ -32,7 +32,7 @@ Lisää rivi tiedostoon `leagues.json`.
 
 ## TikTok
 
-Joka aamu tehdään myös pystyvideo (`make_video.js`, ~24 s, 1080×1920): kansi → jokaisen lajin ruudukko → "Pelaa". Video lähetetään TikTokiin (`publish_tiktok.js`).
+TikTokiin lähtee joka aamu oletuksena **kuvakaruselli** (samat kuvat kuin Instagramissa). TikTok hakee kuvat osoitteesta `https://sporttiruudukot.fi/somekuvat/<pvm>/<kuva>.jpg` (vahvistettu domain), jonka sivuston Worker hakee tämän repon `kuvat`-haarasta. Vaihtoehtona pystyvideo (`make_video.js`, ~24 s). Valinta: variable `TIKTOK_FORMAT` = `photo` (oletus), `video` tai `both`.
 
 **Tilat** (GitHub → Settings → Secrets and variables → Actions → *Variables*):
 
