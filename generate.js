@@ -117,7 +117,7 @@ async function shot(page, body, file, w, h) {
     <style>${BASE_CSS}</style></head><body><div class="page" style="--w:${w}px;--h:${h}px;--pad:${Math.round(w * 0.075)}px">${body}</div></body></html>`,
     { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
-  await page.screenshot({ path: file });
+  await page.screenshot({ path: file, type: 'jpeg', quality: 92 });
   console.log('  ' + path.relative(__dirname, file));
 }
 
@@ -136,12 +136,12 @@ async function shot(page, body, file, w, h) {
 
   console.log('Piirretään kuvat:');
   const W = 1080, H = 1350, SH = 1920;
-  await shot(page, coverHtml(dateStr, leagues), path.join(dir, '01-kansi.png'), W, H);
+  await shot(page, coverHtml(dateStr, leagues), path.join(dir, '01-kansi.jpg'), W, H);
   for (let i = 0; i < leagues.length; i++)
-    await shot(page, leagueHtml(leagues[i], grids[i], false), path.join(dir, `${String(i + 2).padStart(2, '0')}-${leagues[i].id}.png`), W, H);
-  await shot(page, ctaHtml(), path.join(dir, `${String(leagues.length + 2).padStart(2, '0')}-pelaa.png`), W, H);
+    await shot(page, leagueHtml(leagues[i], grids[i], false), path.join(dir, `${String(i + 2).padStart(2, '0')}-${leagues[i].id}.jpg`), W, H);
+  await shot(page, ctaHtml(), path.join(dir, `${String(leagues.length + 2).padStart(2, '0')}-pelaa.jpg`), W, H);
   for (let i = 0; i < leagues.length; i++)
-    await shot(page, leagueHtml(leagues[i], grids[i], true), path.join(dir, `tarina-${leagues[i].id}.png`), W, SH);
+    await shot(page, leagueHtml(leagues[i], grids[i], true), path.join(dir, `tarina-${leagues[i].id}.jpg`), W, SH);
 
   const caption = [
     `Päivän ruudukot ${dateStr} ovat täällä. Pyyhkäise ja löydä oma lajisi.`,

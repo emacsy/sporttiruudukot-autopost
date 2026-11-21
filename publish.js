@@ -59,6 +59,18 @@ async function checkPublic(url) {
   throw new Error(`Kuva ei ole julkisesti saatavilla: ${url}\nOnko repositorio julkinen?`);
 }
 
+// Instagram hakee kuvan itse; joskus haku aikakatkaistaan. Yritetään silloin uudelleen.
+async function createMedia(params) {
+  for (let attempt = 1; ; attempt++) {
+    try { return await api('POST', `${USER}/media`, params); }
+    catch (e) {
+      if (attempt >= 4) throw e;
+      console.log(`  yritys ${attempt} epäonnistui (${e.message}), yritetään uudelleen...`);
+      await sleep(10000 * attempt);
+    }
+  }
+}
+
 async function publish(creationId) {
   await waitReady(creationId);
   const { id } = await api('POST', `${USER}/media_publish`, { creation_id: creationId });
@@ -72,8 +84,8 @@ async function publish(creationId) {
   if (!/^https?:\/\//.test(BASE)) throw new Error('IMAGE_BASE_URL puuttuu tai ei ala https://');
 
   const files = fs.readdirSync(dir).sort();
-  const slides = files.filter(f => /^\d\d-.*\.png$/.test(f));
-  const stories = process.env.SKIP_STORIES ? [] : files.filter(f => /^tarina-.*\.png$/.test(f));
+  const slides = files.filter(f => /^\d\d-.*\.jpg$/.test(f));
+  const stories = process.env.SKIP_STORIES ? [] : files.filter(f => /^tarina-.*\.jpg$/.test(f));
   const caption = fs.readFileSync(path.join(dir, 'kuvateksti.txt'), 'utf8');
   if (slides.length < 2 || slides.length > 20) throw new Error(`Karusellissa pitää olla 2–20 kuvaa, nyt ${slides.length}`);
 
@@ -87,7 +99,7 @@ async function publish(creationId) {
   // Karuselli: ensin jokainen kuva omaksi osakseen, sitten niistä yksi julkaisu.
   const children = [];
   for (const f of slides) {
-    const { id } = await api('POST', `${USER}/media`, { image_url: BASE + f, is_carousel_item: 'true' });
+    const { id } = await createMedia({ image_url: BASE + f, is_carousel_item: 'true' });
     children.push(id);
     console.log(`  ladattu ${f}`);
   }
@@ -100,7 +112,7 @@ async function publish(creationId) {
   let failed = 0;
   for (const f of stories) {
     try {
-      const { id } = await api('POST', `${USER}/media`, { image_url: BASE + f, media_type: 'STORIES' });
+      const { id } = await createMedia({ image_url: BASE + f, media_type: 'STORIES' });
       await publish(id);
       console.log(`Tarina julkaistu: ${f}`);
     } catch (e) { failed++; console.error(`Tarinan ${f} julkaisu epäonnistui: ${e.message}`); }

@@ -10,8 +10,8 @@ npm run generate
 ```
 
 Kuvat tulevat kansioon `output/VVVV-KK-PP/`:
-- `01-kansi.png`, `02-liiga.png`, ..., `NN-pelaa.png`: karuselli (1080 x 1350)
-- `tarina-<liiga>.png`: tarinat (1080 x 1920)
+- `01-kansi.jpg`, `02-liiga.jpg`, ..., `NN-pelaa.jpg`: karuselli (1080 x 1350)
+- `tarina-<liiga>.jpg`: tarinat (1080 x 1920)
 - `kuvateksti.txt`: karusellin kuvateksti
 - `data.json`: haetut ruudukot
 
