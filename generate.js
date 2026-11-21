@@ -142,6 +142,9 @@ async function shot(page, body, file, w, h) {
   await shot(page, ctaHtml(), path.join(dir, `${String(leagues.length + 2).padStart(2, '0')}-pelaa.jpg`), W, H);
   for (let i = 0; i < leagues.length; i++)
     await shot(page, leagueHtml(leagues[i], grids[i], true), path.join(dir, `tarina-${leagues[i].id}.jpg`), W, SH);
+  // TikTok-videon kansi ja lopetus pystykuvana (make_video.js tekee näistä ja tarinoista videon)
+  await shot(page, coverHtml(dateStr, leagues).replace('Pyyhkäise &rarr;', 'Montako saat oikein?'), path.join(dir, 'tiktok-kansi.jpg'), W, SH);
+  await shot(page, ctaHtml(), path.join(dir, 'tiktok-pelaa.jpg'), W, SH);
 
   const caption = [
     `Päivän ruudukot ${dateStr} ovat täällä. Pyyhkäise ja löydä oma lajisi.`,
@@ -153,6 +156,10 @@ async function shot(page, body, file, w, h) {
     '#urheiluvisa #tietovisa ' + leagues.map(l => '#' + (l.tag || l.id)).join(' '),
   ].join('\n');
   fs.writeFileSync(path.join(dir, 'kuvateksti.txt'), caption);
+  // TikTokin kuvateksti: lyhyempi, ilman pyyhkäisyohjetta
+  const tiktokCaption = `Päivän ruudukot ${dateStr} 🏒⚽🏀⚾ Montako saat oikein? Pelaa ilmaiseksi: sporttiruudukot.fi (linkki biossa) ` +
+    '#urheiluvisa #tietovisa #suomi ' + leagues.map(l => '#' + (l.tag || l.id)).join(' ');
+  fs.writeFileSync(path.join(dir, 'tiktok-kuvateksti.txt'), tiktokCaption);
   fs.writeFileSync(path.join(dir, 'data.json'), JSON.stringify(leagues.map((l, i) => ({ ...l, ...grids[i] })), null, 2));
   console.log('Valmis: ' + path.relative(__dirname, dir));
   await browser.close();
