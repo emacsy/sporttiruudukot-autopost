@@ -1,0 +1,25 @@
+name: Päivän ruudukot
+
+on:
+  schedule:
+    # Joka aamu klo 05.17 UTC (talvella 7.17, kesällä 8.17 Suomen aikaa).
+    - cron: "17 5 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: node generate.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ruudukot
+          path: output/
+          retention-days: 14
