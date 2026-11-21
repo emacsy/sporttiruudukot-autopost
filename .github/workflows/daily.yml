@@ -3,13 +3,26 @@ name: Päivän ruudukot
 on:
   schedule:
     # Joka aamu klo 05.17 UTC (talvella 7.17, kesällä 8.17 Suomen aikaa).
+    # Uudet ruudukot julkaistaan sivulla keskiyöllä Suomen aikaa.
     - cron: "17 5 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Julkaise Instagramiin (pois päältä = tee vain kuvat)"
+        type: boolean
+        default: true
+      stories:
+        description: "Julkaise myös tarinat"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write   # kuvat tallennetaan kuvat-haaraan, josta Instagram hakee ne
 
 jobs:
-  generate:
+  run:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,9 +30,34 @@ jobs:
           node-version: 20
       - run: npm install
       - run: npx playwright install --with-deps chromium
-      - run: node generate.js
-      - uses: actions/upload-artifact@v4
+
+      - name: Tee kuvat
+        run: node generate.js
+
+      - name: Tallenna kuvat ladattaviksi
+        uses: actions/upload-artifact@v4
         with:
           name: ruudukot
           path: output/
           retention-days: 14
+
+      - name: Julkaise kuvat kuvat-haaraan
+        id: images
+        run: |
+          DATE=$(TZ=Europe/Helsinki date +%F)
+          cd output
+          git init -q -b kuvat
+          git add "$DATE"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "Kuvat $DATE"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" kuvat
+          echo "dir=output/$DATE" >> "$GITHUB_OUTPUT"
+          echo "url=https://raw.githubusercontent.com/${{ github.repository }}/$(git rev-parse HEAD)/$DATE/" >> "$GITHUB_OUTPUT"
+
+      - name: Julkaise Instagramiin
+        if: github.event_name == 'schedule' || inputs.publish
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IMAGE_BASE_URL: ${{ steps.images.outputs.url }}
+          SKIP_STORIES: ${{ (github.event_name != 'schedule' && !inputs.stories) && '1' || '' }}
+        run: node publish.js "${{ steps.images.outputs.dir }}"
