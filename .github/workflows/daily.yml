@@ -2,9 +2,12 @@ name: Päivän ruudukot
 
 on:
   schedule:
-    # Joka aamu klo 05.17 UTC (talvella 7.17, kesällä 8.17 Suomen aikaa).
-    # Uudet ruudukot julkaistaan sivulla keskiyöllä Suomen aikaa.
+    # Kolme yritystä joka aamu (UTC): 05.17, 06.47 ja 08.17, eli talvella 7.17, 8.47 ja 10.17
+    # Suomen aikaa. GitHub jättää ajastettuja ajoja joskus väliin; myöhemmät yritykset
+    # ohitetaan automaattisesti, jos päivän postaus on jo tehty.
     - cron: "17 5 * * *"
+    - cron: "47 6 * * *"
+    - cron: "17 8 * * *"
   workflow_dispatch:
     inputs:
       publish:
@@ -24,7 +27,27 @@ permissions:
   contents: write   # kuvat tallennetaan kuvat-haaraan, josta Instagram hakee ne
 
 jobs:
+  # Ajastetuissa ajoissa tarkistetaan ensin, onko päivän kuvat jo tehty (kuvat-haarassa).
+  # Käsin käynnistetty ajo tehdään aina.
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.c.outputs.skip }}
+    steps:
+      - id: c
+        run: |
+          DATE=$(TZ=Europe/Helsinki date +%F)
+          if [ "${{ github.event_name }}" != "schedule" ]; then exit 0; fi
+          git init -q .
+          git fetch -q --depth 1 "https://github.com/${{ github.repository }}.git" kuvat || exit 0
+          if git cat-file -e "FETCH_HEAD:$DATE/kuvateksti.txt" 2>/dev/null; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Päivän $DATE postaus on jo tehty, ohitetaan."
+          fi
+
   run:
+    needs: check
+    if: needs.check.outputs.skip != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
