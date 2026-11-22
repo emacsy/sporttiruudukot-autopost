@@ -2,12 +2,12 @@ name: Päivän ruudukot
 
 on:
   schedule:
-    # Kolme yritystä joka aamu (UTC): 05.17, 06.47 ja 08.17, eli talvella 7.17, 8.47 ja 10.17
-    # Suomen aikaa. GitHub jättää ajastettuja ajoja joskus väliin; myöhemmät yritykset
-    # ohitetaan automaattisesti, jos päivän postaus on jo tehty.
-    - cron: "17 5 * * *"
-    - cron: "47 6 * * *"
-    - cron: "17 8 * * *"
+    # Kolme yritystä joka aamu (UTC): 05.07, 06.07 ja 07.07, eli talviaikana 7.07, 8.07 ja 9.07
+    # Suomen aikaa (kesäaikana tuntia myöhemmin). GitHub jättää ajastettuja ajoja joskus väliin;
+    # myöhemmät yritykset ohitetaan automaattisesti, jos päivän postaus on jo tehty.
+    - cron: "7 5 * * *"
+    - cron: "7 6 * * *"
+    - cron: "7 7 * * *"
   workflow_dispatch:
     inputs:
       publish:
@@ -20,6 +20,10 @@ on:
         default: true
       tiktok:
         description: "Lähetä TikTokiin"
+        type: boolean
+        default: true
+      facebook:
+        description: "Julkaise Facebook-sivulle"
         type: boolean
         default: true
 
@@ -94,6 +98,15 @@ jobs:
           IMAGE_BASE_URL: ${{ steps.images.outputs.url }}
           SKIP_STORIES: ${{ (github.event_name != 'schedule' && !inputs.stories) && '1' || '' }}
         run: node publish.js "${{ steps.images.outputs.dir }}"
+
+      - name: Julkaise Facebookiin
+        if: ${{ !cancelled() && steps.images.outcome == 'success' && (github.event_name == 'schedule' || inputs.facebook) }}
+        continue-on-error: true   # Facebook-virhe ei kaada muita julkaisuja
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          IMAGE_BASE_URL: ${{ steps.images.outputs.url }}
+        run: node publish_facebook.js "${{ steps.images.outputs.dir }}"
 
       - name: Lähetä TikTokiin
         if: ${{ !cancelled() && steps.images.outcome == 'success' && steps.video.outcome != 'failure' && vars.TIKTOK_ENABLED == 'true' && (github.event_name == 'schedule' || inputs.tiktok) }}
