@@ -6,8 +6,15 @@ on:
     # Suomen aikaa (kesäaikana tuntia myöhemmin). GitHub jättää ajastettuja ajoja joskus väliin;
     # myöhemmät yritykset ohitetaan automaattisesti, jos päivän postaus on jo tehty.
     - cron: "7 5 * * *"
+    - cron: "37 5 * * *"
     - cron: "7 6 * * *"
+    - cron: "37 6 * * *"
     - cron: "7 7 * * *"
+    - cron: "37 8 * * *"
+  # Ulkoinen ajastin (esim. cron-job.org) käynnistää ajon luotettavammin kuin GitHubin oma cron:
+  # POST https://api.github.com/repos/<omistaja>/<repo>/dispatches  {"event_type":"daily"}
+  repository_dispatch:
+    types: [daily]
   workflow_dispatch:
     inputs:
       publish:
@@ -27,12 +34,18 @@ on:
         type: boolean
         default: true
 
+# Ajot jonoon, ettei kaksi yhtä aikaa käynnistynyttä ajoa julkaise samaa päivää kahdesti
+# (jälkimmäinen näkee check-vaiheessa, että postaus on jo tehty).
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
 permissions:
   contents: write   # kuvat tallennetaan kuvat-haaraan, josta Instagram hakee ne
 
 jobs:
-  # Ajastetuissa ajoissa tarkistetaan ensin, onko päivän kuvat jo tehty (kuvat-haarassa).
-  # Käsin käynnistetty ajo tehdään aina.
+  # Automaattisissa ajoissa (cron ja ulkoinen ajastin) tarkistetaan ensin, onko päivän kuvat
+  # jo tehty (kuvat-haarassa). Käsin käynnistetty ajo tehdään aina.
   check:
     runs-on: ubuntu-latest
     outputs:
@@ -41,7 +54,7 @@ jobs:
       - id: c
         run: |
           DATE=$(TZ=Europe/Helsinki date +%F)
-          if [ "${{ github.event_name }}" != "schedule" ]; then exit 0; fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then exit 0; fi
           git init -q .
           git fetch -q --depth 1 "https://github.com/${{ github.repository }}.git" kuvat || exit 0
           if git cat-file -e "FETCH_HEAD:$DATE/kuvateksti.txt" 2>/dev/null; then
@@ -91,16 +104,16 @@ jobs:
           echo "url=https://raw.githubusercontent.com/${{ github.repository }}/$(git rev-parse HEAD)/$DATE/" >> "$GITHUB_OUTPUT"
 
       - name: Julkaise Instagramiin
-        if: github.event_name == 'schedule' || inputs.publish
+        if: github.event_name != 'workflow_dispatch' || inputs.publish
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
           IMAGE_BASE_URL: ${{ steps.images.outputs.url }}
-          SKIP_STORIES: ${{ (github.event_name != 'schedule' && !inputs.stories) && '1' || '' }}
+          SKIP_STORIES: ${{ (github.event_name == 'workflow_dispatch' && !inputs.stories) && '1' || '' }}
         run: node publish.js "${{ steps.images.outputs.dir }}"
 
       - name: Julkaise Facebookiin
-        if: ${{ !cancelled() && steps.images.outcome == 'success' && (github.event_name == 'schedule' || inputs.facebook) }}
+        if: ${{ !cancelled() && steps.images.outcome == 'success' && (github.event_name != 'workflow_dispatch' || inputs.facebook) }}
         continue-on-error: true   # Facebook-virhe ei kaada muita julkaisuja
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
@@ -109,7 +122,7 @@ jobs:
         run: node publish_facebook.js "${{ steps.images.outputs.dir }}"
 
       - name: Lähetä TikTokiin
-        if: ${{ !cancelled() && steps.images.outcome == 'success' && steps.video.outcome != 'failure' && vars.TIKTOK_ENABLED == 'true' && (github.event_name == 'schedule' || inputs.tiktok) }}
+        if: ${{ !cancelled() && steps.images.outcome == 'success' && steps.video.outcome != 'failure' && vars.TIKTOK_ENABLED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.tiktok) }}
         continue-on-error: true   # TikTok-virhe ei kaada Instagram-julkaisua
         env:
           TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
