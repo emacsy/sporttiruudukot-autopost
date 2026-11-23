@@ -32,8 +32,10 @@ async function api(method, endpoint, params = {}) {
   const json = await res.json().catch(() => ({}));
   if (!res.ok || json.error) {
     const e = json.error || {};
-    throw new Error(`Instagram API ${method} ${endpoint}: ${e.message || res.status}` +
+    const err = new Error(`Instagram API ${method} ${endpoint}: ${e.message || res.status}` +
       (e.error_user_msg ? ` (${e.error_user_msg})` : '') + (e.code ? ` [koodi ${e.code}]` : ''));
+    err.code = e.code;
+    throw err;
   }
   return json;
 }
@@ -71,10 +73,30 @@ async function createMedia(params) {
   }
 }
 
+// Metan tilapäiset virheet: 4/17/32/613 = pyyntörajoitus, 1/2 = tilapäinen palveluvirhe.
+const TRANSIENT = new Set([1, 2, 4, 17, 32, 613]);
+// Uudelleenyrityksiin käytettävä odotusaika yhteensä koko ajon aikana, ettei workflow'n
+// 20 minuutin aikaraja ylity, jos rajoitus jatkuu pitkään.
+let retryBudgetMs = 8 * 60 * 1000;
+
 async function publish(creationId) {
   await waitReady(creationId);
-  const { id } = await api('POST', `${USER}/media_publish`, { creation_id: creationId });
-  return id;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const { id } = await api('POST', `${USER}/media_publish`, { creation_id: creationId });
+      return id;
+    } catch (e) {
+      // Instagram julkaisee joskus virheestä huolimatta. Tarkistetaan ennen uutta yritystä,
+      // ettei samaa julkaisua tule kahdesti.
+      const status = await api('GET', creationId, { fields: 'status_code' }).then(r => r.status_code).catch(() => null);
+      if (status === 'PUBLISHED') { console.log(`  julkaistu virheestä huolimatta (${e.message})`); return creationId; }
+      const wait = 60000 * attempt;
+      if (!TRANSIENT.has(e.code) || attempt >= 4 || wait > retryBudgetMs) throw e;
+      retryBudgetMs -= wait;
+      console.log(`  julkaisu epäonnistui (${e.message}), yritetään uudelleen ${wait / 1000} s kuluttua...`);
+      await sleep(wait);
+    }
+  }
 }
 
 (async () => {
@@ -96,20 +118,24 @@ async function publish(creationId) {
 
   for (const f of [...slides, ...stories]) await checkPublic(BASE + f);
 
+  let failed = 0;
+
   // Karuselli: ensin jokainen kuva omaksi osakseen, sitten niistä yksi julkaisu.
-  const children = [];
-  for (const f of slides) {
-    const { id } = await createMedia({ image_url: BASE + f, is_carousel_item: 'true' });
-    children.push(id);
-    console.log(`  ladattu ${f}`);
-  }
-  for (const id of children) await waitReady(id);
-  const carousel = await api('POST', `${USER}/media`, { media_type: 'CAROUSEL', children: children.join(','), caption });
-  const postId = await publish(carousel.id);
-  console.log(`Karuselli julkaistu (id ${postId})`);
+  // Karusellin virhe ei estä tarinoita; ajo merkitään silti lopuksi epäonnistuneeksi.
+  try {
+    const children = [];
+    for (const f of slides) {
+      const { id } = await createMedia({ image_url: BASE + f, is_carousel_item: 'true' });
+      children.push(id);
+      console.log(`  ladattu ${f}`);
+    }
+    for (const id of children) await waitReady(id);
+    const carousel = await api('POST', `${USER}/media`, { media_type: 'CAROUSEL', children: children.join(','), caption });
+    const postId = await publish(carousel.id);
+    console.log(`Karuselli julkaistu (id ${postId})`);
+  } catch (e) { failed++; console.error(`Karusellin julkaisu epäonnistui: ${e.message}`); }
 
   // Tarinat yksi kerrallaan. Yksittäisen tarinan virhe ei kaada muita.
-  let failed = 0;
   for (const f of stories) {
     try {
       const { id } = await createMedia({ image_url: BASE + f, media_type: 'STORIES' });
