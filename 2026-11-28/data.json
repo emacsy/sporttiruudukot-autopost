@@ -1,0 +1,334 @@
+[
+  {
+    "id": "liiga",
+    "name": "Liigaruudukko",
+    "url": "https://sporttiruudukot.fi/liiga/",
+    "dateText": "#7 · 28.11.2026",
+    "cols": [
+      {
+        "team": true,
+        "abbr": "TAP",
+        "c1": "#F58220",
+        "c2": "#0B3D91",
+        "c3": "#0B3D91",
+        "label": "Tappara"
+      },
+      {
+        "team": true,
+        "abbr": "KÄR",
+        "c1": "#111",
+        "c2": "#FFC20E",
+        "c3": "#FFC20E",
+        "label": "Kärpät"
+      },
+      {
+        "team": false,
+        "label": "Pelannut 2026–27",
+        "sub": "tällä kaudella"
+      }
+    ],
+    "rows": [
+      {
+        "team": true,
+        "abbr": "KOO",
+        "c1": "#E35205",
+        "c2": "#1A1A1A",
+        "c3": "#fff",
+        "label": "KooKoo"
+      },
+      {
+        "team": true,
+        "abbr": "KAL",
+        "c1": "#FFD200",
+        "c2": "#111",
+        "c3": "#111",
+        "label": "KalPa"
+      },
+      {
+        "team": true,
+        "abbr": "KES",
+        "c1": "#F26A21",
+        "c2": "#14213D",
+        "c3": "#14213D",
+        "label": "K-Espoo"
+      }
+    ]
+  },
+  {
+    "id": "nhl",
+    "name": "NHL-ruudukko",
+    "url": "https://sporttiruudukot.fi/nhl/",
+    "dateText": "#7 · 28.11.2026",
+    "cols": [
+      {
+        "team": true,
+        "abbr": "ANA",
+        "c1": "#111",
+        "c2": "#F47A38",
+        "c3": "#F47A38",
+        "label": "Ducks"
+      },
+      {
+        "team": true,
+        "abbr": "LAK",
+        "c1": "#111",
+        "c2": "#A2AAAD",
+        "c3": "#fff",
+        "label": "Kings"
+      },
+      {
+        "team": false,
+        "label": "Varaa­maton",
+        "sub": "ei varattu draftissa"
+      }
+    ],
+    "rows": [
+      {
+        "team": true,
+        "abbr": "EDM",
+        "c1": "#041E42",
+        "c2": "#FF4C00",
+        "c3": "#FF4C00",
+        "label": "Oilers"
+      },
+      {
+        "team": true,
+        "abbr": "PHI",
+        "c1": "#F74902",
+        "c2": "#111",
+        "c3": "#fff",
+        "label": "Flyers"
+      },
+      {
+        "team": true,
+        "abbr": "NYI",
+        "c1": "#00539B",
+        "c2": "#F47D30",
+        "c3": "#fff",
+        "label": "Islanders"
+      }
+    ]
+  },
+  {
+    "id": "nba",
+    "name": "NBA-ruudukko",
+    "url": "https://sporttiruudukot.fi/nba/",
+    "dateText": "#7 · 28.11.2026",
+    "cols": [
+      {
+        "team": true,
+        "abbr": "MIA",
+        "c1": "#98002E",
+        "c2": "#F9A01B",
+        "c3": "#fff",
+        "label": "Heat"
+      },
+      {
+        "team": true,
+        "abbr": "BKN",
+        "c1": "#111",
+        "c2": "#fff",
+        "c3": "#fff",
+        "label": "Nets"
+      },
+      {
+        "team": false,
+        "label": "Varaa­maton",
+        "sub": "ei varattu draftissa"
+      }
+    ],
+    "rows": [
+      {
+        "team": true,
+        "abbr": "IND",
+        "c1": "#002D62",
+        "c2": "#FDBB30",
+        "c3": "#FDBB30",
+        "label": "Pacers"
+      },
+      {
+        "team": true,
+        "abbr": "NYK",
+        "c1": "#006BB6",
+        "c2": "#F58426",
+        "c3": "#fff",
+        "label": "Knicks"
+      },
+      {
+        "team": true,
+        "abbr": "LAL",
+        "c1": "#552583",
+        "c2": "#FDB927",
+        "c3": "#FDB927",
+        "label": "Lakers"
+      }
+    ]
+  },
+  {
+    "id": "premier",
+    "name": "Premier-ruudukko",
+    "url": "https://sporttiruudukot.fi/premier/",
+    "tag": "valioliiga",
+    "dateText": "#7 · 28.11.2026",
+    "cols": [
+      {
+        "team": true,
+        "abbr": "LEE",
+        "c1": "#fff",
+        "c2": "#1D428A",
+        "c3": "#1D428A",
+        "label": "Leeds"
+      },
+      {
+        "team": true,
+        "abbr": "MCI",
+        "c1": "#6CABDD",
+        "c2": "#1C2C5B",
+        "c3": "#1C2C5B",
+        "label": "Man City"
+      },
+      {
+        "team": false,
+        "label": "Puolustaja",
+        "sub": "pääpelipaikka"
+      }
+    ],
+    "rows": [
+      {
+        "team": true,
+        "abbr": "WHU",
+        "c1": "#7A263A",
+        "c2": "#1BB1E7",
+        "c3": "#fff",
+        "label": "West Ham"
+      },
+      {
+        "team": true,
+        "abbr": "AVL",
+        "c1": "#670E36",
+        "c2": "#95BFE5",
+        "c3": "#95BFE5",
+        "label": "Aston Villa"
+      },
+      {
+        "team": true,
+        "abbr": "NEW",
+        "c1": "#111",
+        "c2": "#fff",
+        "c3": "#fff",
+        "label": "Newcastle"
+      }
+    ]
+  },
+  {
+    "id": "veikkaus",
+    "name": "Veikkausruudukko",
+    "url": "https://sporttiruudukot.fi/veikkaus/",
+    "tag": "veikkausliiga",
+    "dateText": "#7 · 28.11.2026",
+    "cols": [
+      {
+        "team": true,
+        "abbr": "OUL",
+        "c1": "#5B6C7E",
+        "c2": "#2A3A4B",
+        "c3": "#fff",
+        "label": "AC Oulu"
+      },
+      {
+        "team": true,
+        "abbr": "HON",
+        "c1": "#5B6C7E",
+        "c2": "#2A3A4B",
+        "c3": "#fff",
+        "label": "FC Honka"
+      },
+      {
+        "team": false,
+        "label": "Puolustaja",
+        "sub": "pääpelipaikka"
+      }
+    ],
+    "rows": [
+      {
+        "team": true,
+        "abbr": "JAR",
+        "c1": "#5B6C7E",
+        "c2": "#2A3A4B",
+        "c3": "#fff",
+        "label": "FF Jaro"
+      },
+      {
+        "team": true,
+        "abbr": "VPS",
+        "c1": "#5B6C7E",
+        "c2": "#2A3A4B",
+        "c3": "#fff",
+        "label": "VPS"
+      },
+      {
+        "team": true,
+        "abbr": "HAK",
+        "c1": "#5B6C7E",
+        "c2": "#2A3A4B",
+        "c3": "#fff",
+        "label": "FC Haka"
+      }
+    ]
+  },
+  {
+    "id": "mlb",
+    "name": "MLB-ruudukko",
+    "url": "https://sporttiruudukot.fi/mlb/",
+    "dateText": "#7 · 28.11.2026",
+    "cols": [
+      {
+        "team": true,
+        "abbr": "MIN",
+        "c1": "#002B5C",
+        "c2": "#D31145",
+        "c3": "#fff",
+        "label": "Twins"
+      },
+      {
+        "team": true,
+        "abbr": "SEA",
+        "c1": "#0C2C56",
+        "c2": "#005C5C",
+        "c3": "#fff",
+        "label": "Mariners"
+      },
+      {
+        "team": false,
+        "label": "All-Star",
+        "sub": "valittu ainakin kerran"
+      }
+    ],
+    "rows": [
+      {
+        "team": true,
+        "abbr": "WSH",
+        "c1": "#AB0003",
+        "c2": "#14225A",
+        "c3": "#fff",
+        "label": "Nationals"
+      },
+      {
+        "team": true,
+        "abbr": "SF",
+        "c1": "#FD5A1E",
+        "c2": "#27251F",
+        "c3": "#111",
+        "label": "Giants"
+      },
+      {
+        "team": true,
+        "abbr": "CLE",
+        "c1": "#0C2340",
+        "c2": "#E31937",
+        "c3": "#fff",
+        "label": "Guardians"
+      }
+    ]
+  }
+]
